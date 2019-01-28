@@ -17,7 +17,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('banana', 'assets/banana.png')
     this.load.image('block', 'assets/block_wood.png')
     this.load.spritesheet('bird', 'assets/bird_texture.png', { frameWidth: 116, frameHeight: 80 })
-    this.load.spritesheet('monkey', 'assets/monkeywalk.png', { frameWidth: 110.5, frameHeight: 155 })
+    this.load.spritesheet('monkey', 'assets/monkeyMoves.png', { frameWidth: 110, frameHeight: 155 })
     this.load.multiatlas('junglescene', 'assets/junglescene.json', 'assets')
   }
 
@@ -35,9 +35,23 @@ export default class GameScene extends Phaser.Scene {
 
     this.anims.create({
       key: 'walk',
-      frames: this.anims.generateFrameNames('monkey', { start: 0, end: 8 }),
+      frames: this.anims.generateFrameNames('monkey', { start: 4, end: 12 }),
       frameRate: 10,
       repeat: -1,
+    })
+
+    this.anims.create({
+      key: 'jump',
+      frames: this.anims.generateFrameNames('monkey', { start: 1, end: 4 }),
+      frameRate: 5,
+      repeat: 0,
+    })
+
+    this.anims.create({
+      key: 'die',
+      frames: [{ key: 'monkey', frame: 0 }],
+      frameRate: 10,
+      repeat: 0,
     })
 
     this._player.anims.play('walk')
@@ -79,6 +93,12 @@ export default class GameScene extends Phaser.Scene {
 
     this.input.on('pointerup', () => {
       this.playerJump()
+
+      this._player.anims.play('jump', true).on('animationcomplete', () => {
+        this._player.anims.play('walk', true)
+      })
+
+
       timer.remove(false)
       this.power = 0
       powerBar.displayWidth = 0
@@ -130,7 +150,7 @@ export default class GameScene extends Phaser.Scene {
     this.bird.setScale(0.7, 0.7)
     this.anims.create({
       key: 'fly',
-      frames: this.anims.generateFrameNames('bird', { start: 0, end: 8 }),
+      frames: this.anims.generateFrameNames('bird', { start: 0, end: 9 }),
       frameRate: 12,
       repeat: -1,
     })
@@ -168,12 +188,13 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.bird.x < 0)
       this.addBird()
-
   }
 
   gameOver() {
     this.lost = true
     this.clickLock = true
+
+    this._player.anims.play('die')
 
     gameData.currentScore = this._score
     updateGameData()
@@ -188,7 +209,7 @@ export default class GameScene extends Phaser.Scene {
     )
 
     this.time.addEvent({
-      delay: 2000,
+      delay: 1500,
       callback: () => {
         this.scene.start('GameOver')
       },
