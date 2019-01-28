@@ -15,4 +15,4 @@ Than open ```http://localhost:8000/``` with running game.
 
 ### Game Instructions:
 - Main goal to get best score by collecting bananas and avoiding barriers.
-- Game controls performed by mouse-clicks. Longer click - higher monkey will jump.
+- **Game controls performed by mouse-clicks.** Longer click - higher monkey will jump.
